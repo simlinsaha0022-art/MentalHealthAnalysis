@@ -1,0 +1,399 @@
+---
+title: "MentalHealthDisorderAnalysis"
+output: word_document
+date: "2026-01-19"
+author: "Simlin Saha"
+---
+```{r}
+data_set=read.csv("C:/Users/simli/Downloads/2- mental-illnesses-prevalence.csv")
+data_set
+```
+
+**Finding the dimensions**
+```{r}
+dim(data_set)
+obs=nrow(data_set);obs #No. of obs
+var=ncol(data_set);var #No. of var
+```
+*My dataset have 101 observations and 11 variables*
+
+**Now Find the data matrix**
+```{r}
+str(data_set)
+dataset_matrix=as.matrix(data_set);
+dataset_matrix
+library(knitr)
+kable(as.data.frame(dataset_matrix))
+```
+
+
+
+**Description of the data matrix**
+```{r}
+dim(dataset_matrix)
+```
+
+
+**Compute descriptive statistics for each quantitative variable. Comment on**
+
+```{r}
+Variables = c("Schizophrenia disorders (share of population) ","Depressive disorders (share of population)","Anxiety disorders (share of population) ","Bipolar disorders (share of population)","Eating disorders (share of population) ");Variables
+What_does_it_represent = c("Schizophrenia disorders of 20 years in 7 countries","Depressive disorders of 20 years in 7 countries"," Anxiety disorders of 20 years in 7 countries","Bipolar disorders of 20 years in 7 countries","Eating  disorders of 20 years in 7 countries");What_does_it_represent
+Type = rep("Quantitative",5);Type
+Nature = c("Discrete","Discrete","Discrete","Discrete","Discrete");Nature
+sc =dataset_matrix[,4:8]
+Minimum <- apply(data_set[,4:8], 2, min, na.rm = TRUE)
+Maximum <- apply(data_set[,4:8], 2, max, na.rm = TRUE)
+Range   <- Maximum - Minimum
+Mean= colMeans(data_set[,4:8],na.rm=TRUE)
+Median=apply(sc, 2, median);Median
+Variance=apply(sc, 2, var);Variance
+Standard_Deviation=apply(sc, 2, sd);Standard_Deviation
+
+
+
+```
+
+```{r}
+final_data <- data.frame(
+  Variables,
+  What_does_it_represent,
+  Type,
+  Nature,
+  Minimum,
+  Maximum,
+  Range,
+  Mean,
+  Median,
+  Variance,
+  Standard_Deviation
+)
+
+final_data
+```
+
+
+##1. Statistical Comments
+#Schizophrenia Disorders (share of population):
+
+#Range:
+#≈ 0.09 to 0.35 (range ≈ 0.26), indicating very limited variation across countries and years.
+
+#Mean vs Median:
+#Mean ≈ Median (both around 0.22–0.24) → approximately symmetric distribution, with minimal skewness.
+
+#Variance & SD:
+#Variance is extremely small; SD ≈ 0.04 → very low dispersion, reflecting strong stability across populations.
+
+#Depressive Disorders (share of population):
+
+#Range:
+#≈ 2.3 to 5.0 (range ≈ 2.7), showing substantial variation across countries and time.
+
+#Mean vs Median:
+#Mean slightly greater than Median → right-skewed distribution, driven by countries with consistently high prevalence.
+
+#Variance & SD:
+#Variance is the largest among all disorders; SD ≈ 0.8–0.9 → high variability relative to the mean.
+
+
+##Anxiety Disorders (share of population):
+
+#Range:
+#≈ 3.6 to 4.9 (range ≈ 1.3), indicating moderate variation.
+
+#Mean vs Median:
+#Mean > Median → mild right skew, suggesting gradual increases over time and higher values in some regions.
+
+#Variance & SD:
+#Moderate variance; SD ≈ 0.5–0.7 → more variable than schizophrenia and bipolar, but less than depression.
+
+#Bipolar Disorders (share of population):
+
+#Range:
+#≈ 0.28 to 0.70 (range ≈ 0.42), indicating low-to-moderate variation.
+
+#Mean vs Median:
+#Mean ≈ Median → near-symmetric distribution, little influence from extreme values.
+
+#Variance & SD:
+#Low variance; SD ≈ 0.15–0.20 → stable prevalence across countries and years.
+
+#Eating Disorders (share of population):
+
+#Range:
+#≈ 0.09 to 0.13 (range ≈ 0.04), the smallest range in the dataset.
+
+#Mean vs Median:
+#Mean slightly greater than Median → slight right skew, driven by gradual increases in recent years.
+
+##Variance & SD:
+#Very low variance; SD ≈ 0.01–0.02 → highly consistent prevalence globally.
+
+#General Statistical Observations:
+
+#Depressive disorders exhibit the highest variability, both in absolute terms and relative to their mean.
+
+#Eating and schizophrenia disorders show the least variability, indicating strong cross-country and temporal stability.
+
+#Mild right skewness appears in depression, anxiety, and eating disorders, reflecting higher prevalence in specific countries or later years.
+
+#Overall dispersion is much smaller for severe mental illnesses than for mood and anxiety disorders.
+
+##2. Non-Statistical Comments
+
+#Severe Mental Disorders (Schizophrenia & Bipolar):
+#Their remarkably stable prevalence suggests strong biological determinants and limited sensitivity to socioeconomic change.
+
+#Depressive and Anxiety Disorders:
+#Higher variability likely reflects differences in:
+
+#Diagnostic practices
+
+#Cultural stigma and reporting
+
+#Economic stressors and conflict exposure
+
+#Eating Disorders:
+#Low prevalence but gradual increase may indicate changing lifestyles, increased awareness, and improved diagnosis rather than true incidence growth.
+
+#Contextual Insight:
+#Countries with higher anxiety or depression prevalence do not necessarily show higher schizophrenia or bipolar prevalence, indicating distinct etiological pathways. While social and economic conditions influence common mental disorders, they appear to have little effect on severe psychotic disorders. 
+
+```{r}
+boxplot(data_set[,4:8], 
+        main = "Boxplot of mental health Variables",
+        col = c("lightblue", "lightgreen", "lightpink", "lightyellow", "black"))
+
+```
+```{r}
+pairs(data_set[,4:8],main = "mental health",pch = 19,col = "darkgreen")
+```
+
+**Correlation Matrix and Interpretation**
+##Compute the Correlation Matrix
+```{r}
+# Select quantitative variables
+mh_data <- data_set[, 4:8]
+
+# Correlation matrix
+cor_matrix <- cor(mh_data, use = "complete.obs")
+cor_matrix
+```
+
+##Visual Representation
+```{r}
+library(corrplot)
+corrplot(cor_matrix, method = "color", type = "upper",
+         tl.col = "blue", tl.cex = 0.4, tl.srt=45)
+
+```
+
+##Interpretation (Strength & Direction)
+
+#Most correlations are positive, indicating that countries with higher prevalence of one mental disorder tend to have higher prevalence of others.
+
+#Depressive and Anxiety disorders show a moderate to strong positive correlation, suggesting shared social, psychological, and environmental risk factors.
+
+#Schizophrenia and Bipolar disorders exhibit weak correlations with mood and anxiety disorders, reflecting their distinct biological etiology.
+
+#Eating disorders have weak-to-moderate correlations with depression and anxiety, consistent with comorbidity patterns.
+
+**Data Preprocessing**
+##i.Missing Value Check
+```{r}
+# Count missing values
+missing_counts <- colSums(is.na(mh_data))
+missing_counts
+
+# Proportion of missing values
+missing_prop <- missing_counts / nrow(mh_data)
+missing_prop
+
+```
+#Handling Missing Values
+```{r}
+# Since missing values are negligible, apply listwise deletion
+mh_clean <- na.omit(mh_data)
+
+```
+# Comment (for report):
+
+#The proportion of missing values is negligible; therefore, listwise deletion was applied to preserve data integrity without biasing estimates.
+
+##ii.Outlier Detection
+```{r}
+boxplot(mh_clean,
+        main = "Boxplots for Mental Health Variables",
+        col = c("lightblue", "lightgreen", "lightpink", "lightyellow", "lightgray"))
+
+```
+#Z-score Method
+```{r}
+z_scores <- scale(mh_clean)
+outliers <- which(abs(z_scores) > 3, arr.ind = TRUE)
+outliers
+
+```
+#Few extreme values are observed, particularly in depressive and anxiety disorders. These may influence variance and covariance estimates and therefore PCA results.
+##iii. Standardization
+
+#a) Why Standardization is Important
+
+# Explanation (write exactly this):
+
+#Standardization ensures that all variables contribute equally to multivariate analysis by rescaling them to a common unit (mean = 0, standard deviation = 1). Without standardization, variables with larger variances—such as depressive disorders—would dominate the analysis and distort principal components.
+```{r}
+# Summary before
+summary(mh_clean)
+
+# Standardize
+mh_scaled <- scale(mh_clean)
+
+# Summary after
+summary(mh_scaled)
+
+```
+# Observation:
+
+#Means are approximately 0
+
+#Standard deviations are approximately 1
+**Covariance and Correlation Matrix**
+```{r}
+cov_matrix <- cov(mh_scaled)
+cov_matrix
+
+```
+#b) Comments
+
+# Interpretation:
+
+#Symmetry: Covariance matrix is symmetric
+
+#Diagonal elements: Equal to 1 (variance of standardized variables)
+
+#Off-diagonal elements: Represent covariances between mental disorders
+
+#Positive covariance → disorders increase together
+
+#Negative covariance → inverse relationship
+
+
+#a) Eigen Decomposition
+
+```{r}
+eigen_results <- eigen(cov_matrix)
+
+# Eigenvalues
+eigenvalues <- eigen_results$values
+eigenvalues
+
+# Eigenvectors
+eigenvectors <- eigen_results$vectors
+eigenvectors
+
+```
+
+```{r}
+# Proportion of variance
+prop_variance <- eigenvalues / sum(eigenvalues)
+prop_variance
+
+# Cumulative variance
+cumsum(prop_variance)
+
+```
+# Interpretation:
+
+#The first principal component explains the largest share of total variance and reflects overall mental illness prevalence.
+
+#Subsequent components capture contrasts between common mental disorders (depression, anxiety) and severe disorders (schizophrenia, bipolar).
+
+#Components with eigenvalues > 1 are typically retained for PCA interpretation.
+
+#a) Meaning of Eigenvalues and Eigenvectors
+```{r}
+eig <- eigen(cov(mh_scaled))
+
+eig$values
+```
+
+# INTERPRETATION:
+# - Large eigenvalues indicate principal components that explain a large
+#   amount of variability in the data.
+# - Small eigenvalues indicate components that contribute little information
+#   and may be ignored.
+```{r}
+eig$vectors
+```
+
+# INTERPRETATION:
+# - Eigenvectors are orthogonal (perpendicular) to each other.
+# - Orthogonality implies that principal components are uncorrelated.
+# - Each eigenvector defines a new independent direction in the data space.
+
+
+#b) Role of Eigenvalues and Eigenvectors
+```{r}
+sum(eig$values)
+```
+
+# INTERPRETATION:
+# - The sum of eigenvalues equals the total variance in the standardized data.
+# - Each eigenvalue represents how much variance is captured by its component.
+```{r}
+eig$vectors
+```
+
+# INTERPRETATION:
+# - Eigenvectors provide the weights (loadings) used to construct
+#   principal components.
+# - They define new uncorrelated directions that maximize variance.
+
+##PCA Concepts Explained Using R
+
+#Variance Explained from Eigenvalues
+# Proportion of variance explained
+```{r}
+variance_explained <- eig$values / sum(eig$values)
+variance_explained
+```
+# Cumulative variance explained
+```{r}
+cumulative_variance <- cumsum(variance_explained)
+cumulative_variance
+```
+# INTERPRETATION:
+# - Variance explained is obtained by dividing each eigenvalue
+#   by the sum of all eigenvalues.
+# - Cumulative variance helps decide how many components to retain.
+
+Principal Components from Eigenvectors
+```{r}
+PC_scores <- mh_scaled %*% eig$vectors
+head(PC_scores)
+```
+# INTERPRETATION:
+# - Principal components are obtained by multiplying the standardized data
+#   by the eigenvectors.
+# - Each column represents a new uncorrelated component.
+
+PCA for Dimensionality Reduction
+```{r}
+pca_model <- prcomp(mh_clean, scale. = TRUE)
+
+summary(pca_model)
+```
+# INTERPRETATION:
+# - PCA reduces dimensionality by replacing original variables
+#   with fewer principal components.
+# - The first few components retain maximum variability.
+# - This allows efficient data representation with minimal information loss.
+
+# CONCLUSION:
+# PCA summarizes the mental health dataset using fewer uncorrelated variables.
+# Eigenvalues indicate the importance of each component,
+# eigenvectors define their directions,
+# and dimensionality reduction is achieved while preserving
+# the maximum possible variance.
